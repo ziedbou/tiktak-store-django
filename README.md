@@ -15,7 +15,7 @@ Vous créez un compte en ligne dans tiktakpro.tn  => Vous récupèrez Identifian
 
 Sous le dossier TiktakSore, Vous créez un fichier .env avec les informations suivantes:
 
-ENDPOINT_API=https://api.tiktak.space/api/v1/
+ENDPOINT_API=https://api.tiktak.space/api/v1/ <br>
 DEBUG=True
 
 
