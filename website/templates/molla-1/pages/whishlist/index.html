@@ -1,0 +1,65 @@
+{% extends "../index.html" %}
+{% block body %}
+
+<main class="main">
+    <nav aria-label="breadcrumb" class="breadcrumb-nav">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Mes favories</li>
+            </ol>
+        </div><!-- End .container -->
+    </nav><!-- End .breadcrumb-nav -->
+
+    <div class="page-content">
+        <div class="container">
+            <table class="table table-wishlist table-mobile">
+                <thead>
+                    <tr>
+                        <th>Produit</th>
+                        <th>Prix</th>
+                        <th>Stock</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr v-for="(product, index) in whishlistProducts" :key="product.name">
+                        <td class="product-col">
+                            <div class="product">
+                                <figure class="product-media">
+                                    <a v-bind:href="[[ getProductLink(product) ]]">
+                                        <img v-bind:src="[[ product.photo_thumb ]]" alt="Product image">
+                                    </a>
+                                </figure>
+
+                                <h3 class="product-title">
+                                    <a v-bind:href="[[ getProductLink(product) ]]">[[ product.name ]]</a>
+                                </h3><!-- End .product-title -->
+                            </div><!-- End .product -->
+                        </td>
+                        <td class="price-col">[[ product.price ]] {{ company.currency }}</td>
+                        <td class="stock-col">
+                            <span v-if="product.stock <= 0" class="out-of-stock">Rupture de stock</span>
+                            <span v-if="product.stock > 0"class="in-stock">En stock</span>
+                        </td>
+          
+                        <td class="remove-col"><button class="btn-remove" @click="RemoveFromWishlist(index)"><i class="icon-close"></i></button></td>
+                    </tr>
+
+                </tbody>
+            </table><!-- End .table table-wishlist -->
+            <div class="wishlist-share">
+                <div class="social-icons social-icons-sm mb-2">
+                    <label class="social-label">Partager:</label>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{seo.url}}" class="social-icon" title="Facebook" target="_blank"><i class="icon-facebook-f"></i></a>
+                    <a href="https://twitter.com/intent/tweet?url={{seo.url}}&text={{product.name}}" class="social-icon" title="Twitter" target="_blank"><i class="icon-twitter"></i></a>
+                    <a href="https://api.whatsapp.com/send?text={{seo.url}}" class="social-icon" title="whatsapp" target="_blank"><i class="icon-whatsapp"></i></a>
+                    <a href="https://pinterest.com/pin/create/button/?url={{seo.url}}&media={{product.photo}}&description={{product.name}}" class="social-icon" title="Pinterest" target="_blank"><i class="icon-pinterest"></i></a>
+                </div><!-- End .soial-icons -->
+            </div><!-- End .wishlist-share -->
+        </div><!-- End .container -->
+    </div><!-- End .page-content -->
+</main>
+
+{% endblock %}

@@ -1,0 +1,72 @@
+{% load get_link %}
+
+<button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu-overlay"></div><!-- End .mobil-menu-overlay -->
+
+<div class="mobile-menu-container">
+    <div class="mobile-menu-wrapper">
+        <span class="mobile-menu-close"><i class="icon-close"></i></span>
+
+        <form @submit.prevent="searchCall()" class="mobile-search">
+            <label for="mobile-search" class="sr-only">Search</label>
+            <input type="search" class="form-control" v-model="search" name="mobile-search" id="mobile-search" placeholder="Rechercher ..." required>
+            <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
+        </form>
+        <nav class="mobile-nav">
+            <ul class="mobile-menu">
+                {% for menu in header  %}
+                    <li>
+                        <a href="{{ menu | get_link }}" class="sf-with-ul">{{menu.label}}</a>
+                         {% if menu.submenu|length > 0 %}
+                            <ul>    
+                                {% for submenu in menu.submenu %}
+                                    {% if submenu.type == "extern" %}
+                                        <li><a href="{{ submenu.href }}">{{submenu.label}}</a></li>
+                                    {% else %}
+                                        <li><a href="{{ submenu | get_link }}">{{submenu.label}}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </li>
+                {% endfor %} 
+            </ul>
+        </nav><!-- End .mobile-nav -->
+
+        <div class="social-icons">
+            {% if social_links.facebook and social_links.facebook != "" %}
+                <a href="https://www.facebook.com/{{ social_links.facebook }}" class="social-icon" title="Facebook" target="_blank"><i class="icon-facebook-f"></i></a>
+            {% endif %}
+
+            {% if social_links.whatsapp and social_links.whatsapp != "" %}
+                <a href="https://wa.me/{{ social_links.whatsapp }}" class="social-icon" title="Whatsapp" target="_blank"><i class="icon-whatsapp"></i></a>
+            {% endif %}
+                    
+            {% if social_links.instagram and social_links.instagram != "" %}
+                <a href="https://www.instagram.com/{{ social_links.instagram }}" class="social-icon" title="Instagram" target="_blank"><i class="icon-instagram"></i></a>
+            {% endif %}
+            
+            {% if social_links.youtube and social_links.youtube != "" %}
+                <a href="https://www.youtube.com/channel/{{ social_links.youtube }}" class="social-icon" title="Youtube" target="_blank"><i class="icon-youtube"></i></a>
+            {% endif %}
+
+            {% if social_links.linkedin and social_links.linkedin != "" %}
+                <a href="https://www.linkedin.com/in/{{ social_links.linkedin }}" class="social-icon" title="Instagram" target="_blank"><i class="icon-linkedin"></i></a>
+            {% endif %}       
+            
+            {% if social_links.snapchat and social_links.snapchat != "" %}
+                <a href="http://www.snapchat.com/add/{{ social_links.snapchat }}" class="social-icon" title="Instagram" target="_blank"><i class="icon-snapchat"></i></a>
+            {% endif %}        
+            
+            {% if social_links.tiktok and social_links.tiktok != "" %}
+                <a href="https://www.tiktok.com/@{{ social_links.tiktok }}" class="social-icon" title="Tiktok" target="_blank">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-tiktok" viewBox="0 0 16 16">
+                        <path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3V0Z"/>
+                    </svg>
+                </a>
+            {% endif %} 
+        </div><!-- End .social-icons -->
+    </div><!-- End .mobile-menu-wrapper -->
+</div><!-- End .mobile-menu-container -->

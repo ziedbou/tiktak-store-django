@@ -1,0 +1,504 @@
+    {% load static %}
+    {% load to_json %}
+
+
+
+    <!-- Vue -->
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>        
+    <script src="https://js.pusher.com/7.1/pusher.min.js"></script>
+
+
+    <script>
+        setTimeout(()=> {$('[data-toggle="tooltip"]').tooltip()}, 500) 
+
+    
+
+        Vue.createApp({
+            compilerOptions: {
+                delimiters: ['[[', ']]']
+            },
+
+            methods: {
+                /****************************  HELPERS  ****************************/
+       
+                imghttps(value) {
+                    if (!value) return ''
+                    if (value.indexOf('localhost') != -1) return value
+                    return value.replace('http:','https:')
+                },
+                getPriceOfProduct(product, quantity = 2) {
+                    //SIMPL DISCOUNT
+                    let price = this.getPriceFromDiscountType(product.price, product.discount, product.discount_type)
+                    //DISCOUNT WITH FORMULA	
+                    if (product.formula.length && quantity>1) {
+                  
+                      try { 
+                        //GET FORMULA TO USE
+                        let formulaToUse = this.findFormulaByDate(product.formula, quantity);
+                        //CALCULATE PRICE WITH FORMULA
+                        price = this.getPriceFromDiscountType(product.price, formulaToUse['discount'], formulaToUse['discount_type'])
+                      }
+                      catch (error) {
+                        return price;
+                      }
+                    }
+                    return price;
+                },
+                getPriceFromDiscountType(price, discount, discountType) {
+                    if (discountType == "fixed_amount")
+                        return price - discount
+                    else if (discountType == "percent")
+                        return price - (price * discount / 100)
+                    else
+                        return price
+                },
+                findFormulaByDate(formulas, quantity) {
+                    formulas.sort((a, b) => (a.quantity > b.quantity) ? -1 : ((b.quantity > a.quantity) ? 1 : 0))
+                    if (typeof (formulas) == 'object' && formulas.length && formulas.find(x => x.quantity <= quantity)) {
+                        let formulaToUse = formulas.find(x => x.quantity <= quantity);
+                        return formulaToUse;
+                    }
+                },
+                updateGouvernorat(value) {
+                    this.order.delegation = ""
+                    this.options = [];
+                    if(value){
+                      for (let v of this.gouvernorats[value]) {
+                        this.options.push(v.localite + ' ' + v.delegation)
+                      }
+                    }
+                },
+                formatDate(date) {
+                    const options = { year: 'numeric', month: 'numeric', day: 'numeric' }
+                    return new Date(date).toLocaleDateString('en-US', options)
+                  },
+                /****************************  END HELPERS  ****************************/
+
+                /****************************  INIT  ****************************/
+                init() {
+
+                    //CART
+                    if (localStorage['cart']){
+                        this.cart = JSON.parse(localStorage.getItem('cart'))
+                    } else {
+                        localStorage.setItem('cart', JSON.stringify(this.cart))
+                    }
+
+                    //COMPANY
+                    this.company = {{ company|to_json|safe }};
+
+                    //USER
+                    if(this.logged){
+                        this.user = JSON.parse(localStorage.getItem('user'))
+                        this.order = {
+                            "name": this.user.customer.name,
+                            "contact": "",
+                            "gouvernorat": this.user.customer.addresses[0]?.gouvernorat,
+                            "delegation": this.user.customer.addresses[0]?.delegation,
+                            "address": this.user.customer.addresses[0]?.address,
+                            "code_postal": this.user.customer.addresses[0]?.code_postal,
+                            "phone": this.user.customer.phone,
+                            "phone_extra": this.user.customer.phone_extra,
+                            "email": this.user.email,
+                            "comment": "",
+                            "payement_type": "ONLINE",
+                            "transport_id": null,
+                            "total_amount": 0,
+                            "_details": []
+                        }
+                    }
+
+                    //SET CURRENT PAGE
+                    this.setPage();
+
+                    //CHECK FB PIXEL
+                    document.getElementById('fb-pixel') ? this.has_pixel = true : this.has_pixel = false
+
+                },
+                getProductList(){
+                     axios.
+                    get(this.api+'products-read/?company={{company.id}}').
+                    then(response => {
+                        this.products_filtered = response.data['results'];
+                        this.product = response.data['results'][0]
+
+                        this.addToCart(quantity=1, null)
+                    })
+                },
+                /****************************  END INIT  ****************************/
+
+                /****************************  CART  ****************************/
+                addToCart(quantity=1, event) {     
+                        this.loading = false;
+                               
+                        event && event.preventDefault()
+                        let product = this.products_filtered[0];
+
+                        this.has_pixel && fbq('track', 'AddToCart', {
+                            content_ids: [product.id], 
+                            content_type: "product_group",
+                            value: product.final_price,
+                            currency: this.company.currency
+                        });
+                      
+                        
+                        let detail = {}
+                        let unit_price = this.getPriceOfProduct(product, quantity);
+    
+                        detail['_product'] = product;
+                        detail['quantity'] = quantity;
+                        detail['product_name'] = product.name;
+                        detail['product_id'] = product.id;
+                        detail['taxe_rate'] = product.taxe_rate;
+                        detail['category_id'] = product.category;
+                        detail['product_parent_id'] = product.parent ? product.parent : product.id;
+                        detail['active_stock'] = product.active_stock;
+                        detail['product_ref'] = product.reference;
+                        detail['price_ttc_after_discount'] = unit_price;
+                        detail['product_attrs'] = product._attributs ? product._attributs.map(x => x.name).join(' ') : '';
+                        detail['product_thumb'] = product.photo_thumb;
+                        detail['is_custom'] = product.is_custom;
+                        detail['price_ttc'] = product.price;
+                        detail['final_price'] = unit_price * quantity;
+                        detail['discount'] = product.price - unit_price;
+    
+                        this.cart._details.push(detail)
+                        this.updateCart()
+                        console.log(this.cart)
+    
+                    
+                },
+                removeFromCart(index){
+                    this.cart._details.splice(index,1)
+                    this.updateCart()
+                },
+                updateCart(){
+                    let discount = subtotal = 0
+                    for(let prod of this.cart._details){
+                        prod.final_price = prod.quantity * prod.price_ttc_after_discount
+                        discount += prod.discount
+                        subtotal += prod.final_price
+                    }
+                    this.cart.discount = discount
+                    this.cart.subtotal = this.cart.total_amount = subtotal
+                    this.cart.total = this.cart.total_amount +  this.cart.transport_price
+                    localStorage.setItem('cart', JSON.stringify(this.cart))
+                },
+                updateCartTransporter(transporter){
+                    this.cart.transport = transporter
+                    this.cart.transport_price = transporter.price
+                    this.cart.total = this.cart.subtotal
+                    this.cart.total += transporter.price
+                    localStorage.setItem('cart', JSON.stringify(this.cart))
+                },
+                clearCart(){
+                    this.cart._details = []
+                    this.cart.transport = null
+                    this.cart.transport_price = []
+                    this.cart.promoCode = ""
+                    this.cart.promoCodeDiscount = 0
+                    this.cart.discount = 0
+                    this.cart.subtotal = 0
+                    this.cart.total = 0
+                    this.cart.total_amount = 0
+                    this.setCart();
+                },
+                setCart(event = ""){
+                    if(this.company.works_with_transport && $('input[name="shipping"]').length){
+
+                        let defaultTransporter = $('input[name="shipping"]:checked').value;
+                        if(defaultTransporter){
+                            defaultTransporter = JSON.parse(defaultTransporter)
+                        }
+
+                    }
+
+                    event && event.preventDefault()
+                    if(this.cart.promoCode && this.cart.promoCode != ""){
+                        this.setPromoCodeValue()
+                    }
+                    setTimeout(()=>{
+                        localStorage.setItem('cart', JSON.stringify(this.cart))
+                    },100)
+                },
+                setPromoCodeValue(){
+                    axios
+                    .request({
+                        url: this.api+'website/get-auto-discount',
+                        method: "POST",
+                        data: {
+                            details: this.cart._details,
+                            code: this.cart.promoCode,
+                            slug: this.company.slug
+                        }
+                    })
+                    .then(response => {
+                        this.cart.promoCodeDiscount = response.data.toFixed(2);
+                    })
+                    .catch(error => {
+                        this.cart.promoCodeDiscount = 0
+                    })
+                },
+                /****************************  END CART  ****************************/
+
+                /**************************** SECTIONS ****************************/
+              
+  
+                /****************************  END WISHLIST  ****************************/
+
+                /****************************  USER  ****************************/
+        
+                /****************************  END USER  ****************************/
+
+                /****************************  ORDER  ****************************/
+                createOrder(){
+                    this.order.transport_id = this.cart.transport ? this.cart.transport.id : null
+                    this.order.total_amount = this.cart.total_amount
+                    this.order._details = this.cart._details
+                    this.has_pixel && fbq('track', 'Purchase', {currency: this.company.currency, value: this.order.total_after_discount});
+                    this.loading = true;
+
+                    let headerConfig = this.logged ? {Authorization: "Token " + this.token} : null
+
+                    axios
+                    .request({
+                      url: this.api + "create-fast-order/",
+                      method: "POST",
+                      headers: headerConfig,
+                      data:{
+                        order: this.order,
+                        promo_code: this.cart.promoCode,
+                        company: this.company.id,
+                        create_account: this.createAccount
+                      }
+                    })
+                    .then((response) => {
+                      //to add payment error?
+                      if(response.status == 200){
+
+                          if(this.order.payement_type == 'ONLINE' && response.data.payment.payUrl){
+                            window.location.href = response.data.payment.payUrl
+                          }
+
+                          this.order_message = response.data.order.order_number;
+                          this.loading = false;
+
+                          $('#success-modal').modal();
+                          this.clearCart();
+                      }
+                    });
+                },
+                setPaymentType(type){
+                    this.order.payement_type = type
+                },
+                getCustomerOrders(){
+                    axios
+                    .request({
+                      url: this.api + "website/get-customer-orders/",
+                      method: "GET",
+                      headers: { Authorization: "Token " + this.token }
+                    })
+                    .then((response) => {
+                        this.customerOrders = response.data.slice(0, 5)
+                    });
+                },
+                /**************************** END ORDER ****************************/
+
+                /**************************** SEARCH ****************************/
+                searchCall(){
+                    window.location.href = '/search?products='+this.search
+                },
+                searchProducts(){
+                    let queryString = window.location.search;
+                    let urlParams = new URLSearchParams(queryString);
+                    let searchParam = urlParams.get('products')
+                    if(searchParam && searchParam != ""){
+                        axios.
+                        get(this.api+'products-read/?company='+ this.company.id +'&search=' + searchParam).
+                        then(response => {
+                            this.ProductsSearch = response.data;
+                        })    
+                    }
+                },
+                searchProductsPagination(apiUrl){
+                    axios.
+                    get(apiUrl).
+                    then(response => {
+                        this.ProductsSearch = response.data;
+                    })  
+                }
+                /**************************** END SEARCH ****************************/
+            },
+            data() {
+                return {
+                    //api: "https://api.tiktak.space/api/v1/",
+                    api: "{{'ENDPOINT_API'|env }}",
+                    loading : false,
+                    order_message:'',
+                    colorSelected : '',
+                    availableColors :[],
+                    //LOGIN & SIGN UP
+                    logged: false,
+                    loginForm: {
+                        "username": "",
+                        "email": "",
+                        "password": "",
+                    },
+                    loginFormError: false,
+                    signUpForm: {
+                        "first_name": "",
+                        "last_name": "",
+                        "email": "",
+                        "phone": "",
+                        "phone_extra": "",
+                        "password": "",
+                        "password2": "",
+                        "profile": false,
+                        "username": "",
+                        "company": "",
+                        "code_tva": null
+                    },
+                    signUpFormError: false,
+                    
+                    resetPassword: false,
+                    resetPasswordError: false,
+                    resetPasswordEmail: "",  
+                    resetPasswordErrorMessage: "",
+                    resetPass1: "",
+                    resetPass2: "",
+
+                    ErrorMessage: "",
+                                        
+                    search: "",
+                    company : {{company | to_json | safe }},
+                    token : null,
+                    addressToEdit: {},
+                    selectedAddressIndex: null,
+
+                    user: {
+                            "customer": {
+                                "favourite": [],
+                                "addresses": [ {} ]
+                            },
+                            "name": "",
+                            "email": "",
+                            "phone": "",
+                            "phone_extra": "",
+                            "code_tva": "",
+                    },
+                    UserSubmitError: false,
+                    UserSubmitMessage: "",
+
+                    cart: {
+                        "_details":[],
+                        "transport": null,
+                        "transport_price": 0,
+                        "promoCode": "",
+                        "promoCodeDiscount": 0,
+                        "discount": 0,
+                        "subtotal": 0,
+                        "total": 0,
+                        "total_amount": 0,
+                    },
+                    productQte: 1,
+                    order: {
+                        "email": "",
+                        "name": "",
+                        "contact": "",
+                        "gouvernorat": "",
+                        "delegation": "",
+                        "address": "",
+                        "code_postal": "",
+                        "phone": "",
+                        "phone_extra": "",
+                        "comment": "",
+                        "payement_type": "ONLINE",
+                        "transport_id": null,
+                        "total_amount": 0,
+                        "_details": null
+                    },
+                    createAccount: false,     
+                    whishlistProducts: [],
+                    ProductsSearch: {
+                        "count": 0,
+                        "current_page": 1,
+                        "next": null,
+                        "previous": null,
+                        "results": [],
+                        "total_pages": 1
+                    },
+                    has_pixel: false,
+
+                    customerOrders: [],
+
+                    //sections 
+                    sectionData: {},
+                    sectionIndex: 1,
+
+                    //section messages
+                    topSectionMessages : [{
+                        "position": "before-header",
+                        "color": null,
+                        "message": ""
+                    }],
+                    bottomSectionMessages : [{
+                        "position": "after-footer",
+                        "color": null,
+                        "message": ""
+                    }],
+                    sectionMessages : [{
+                        "position": 'null',
+                        "color": null,
+                        "message": ""
+                    }],
+
+                    //product
+                    product: null,
+                    product_options: [],
+                    product_attributs: [],
+                    filterForm: {},
+                    attributSteps: [],
+                    products_filtered: [],
+                    pOptions: null,
+                    storedAttributSteps: [],
+
+                    //product list
+                    productsSize: 12,
+                    productsSort: "-updated_at", 
+                    productInfo: {
+                        "title": "",
+                        "message":""
+                    },
+                    category: null,
+                    products:  {
+                        "count": 0,
+                        "current_page": 1,
+                        "next": null,
+                        "previous": null,
+                        "results": [],
+                        "total_pages": 1
+                    },
+
+                    options: [],
+                    gouvernorats :[]
+                }
+            },
+            beforeMount() {
+                //this.init()
+            },
+            mounted() {
+                this.getProductList()
+                
+            },
+
+        }).mount('#tiktak-store-app') 
+
+    </script>
+
+
+    <script src="https://api.tiktak.space/api/v1/website/main.js?slug={{ company.slug }}"/></script> 
+
+</body>
+
+</html>

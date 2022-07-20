@@ -1,0 +1,36 @@
+{% extends "../index.html" %}
+{% block body %}
+
+<main class="main">
+
+    <div class="login-page bg-image pt-8 pb-8" style="background-color: #445f84;">
+        <div class="container">
+            <div class="form-box">
+                <h3>Réinitialisation </h3>
+                <div v-if="resetPasswordError" class="alert alert-danger" role="alert">
+                    [[ ErrorMessage ]]
+                </div>
+                <form @submit.prevent="resetPasswordConfirm()">
+                    <div class="form-group">
+                        <label for="">Nouveau mot de passe *</label>
+                        <input type="password" class="form-control" v-model="resetPass1" required="">
+                    </div><!-- End .form-group -->
+
+                    <div class="form-group">
+                        <label for="">Répéter Mot de passe *</label>
+                        <input type="password" class="form-control" v-model="resetPass2" required="">
+                    </div><!-- End .form-group -->
+
+                    <div class="form-footer">
+                        <button type="submit" class="btn btn-outline-primary-2">
+                            <span>VALIDER</span>
+                            <i class="icon-long-arrow-right"></i>
+                        </button>
+                    </div><!-- End .form-footer -->
+                </form>
+            </div><!-- End .form-box -->
+        </div><!-- End .container -->
+    </div><!-- End .login-page section-bg -->
+</main>
+
+{% endblock %}

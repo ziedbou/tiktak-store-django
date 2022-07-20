@@ -1,0 +1,56 @@
+{% load images_tags %}
+<div class="icon-boxes-container icon-boxes-separator bg-transparent">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6 col-lg-4">
+                <div class="icon-box icon-box-side">
+                    <span class="icon-box-icon text-primary">
+                        {% if data.values.icon_1.image_thumb and data.values.icon_1.image_thumb != "" %}
+                            <img class="icon" width="40" height="40" src="{{ data.values.icon_1.image_thumb | imghttps}}">
+                        {% else %}
+                            <i class="icon-rocket"></i>
+                        {% endif %}
+                    </span>
+                    <div class="icon-box-content">
+                        <h3 class="icon-box-title">{{ data.values.title_1 }}</h3><!-- End .icon-box-title -->
+                        <p>{{ data.values.subtitle_1 }}</p>
+                    </div><!-- End .icon-box-content -->
+                </div><!-- End .icon-box -->
+            </div><!-- End .col-sm-6 col-lg-3 -->
+            
+            <div class="col-sm-6 col-lg-4">
+                <div class="icon-box icon-box-side">
+                    <span class="icon-box-icon text-primary">
+                        {% if data.values.icon_2.image_thumb and data.values.icon_2.image_thumb != "" %}
+                            <img class="icon" width="40" height="40" src="{{ data.values.icon_2.image_thumb | imghttps}}">
+                        {% else %}
+                            <i class="icon-rotate-left"></i>
+                        {% endif %}
+                    </span>
+
+                    <div class="icon-box-content">
+                        <h3 class="icon-box-title">{{ data.values.title_2 }}</h3><!-- End .icon-box-title -->
+                        <p>{{ data.values.subtitle_2 }}</p>
+                    </div><!-- End .icon-box-content -->
+                </div><!-- End .icon-box -->
+            </div><!-- End .col-sm-6 col-lg-3 -->
+
+            <div class="col-sm-6 col-lg-4">
+                <div class="icon-box icon-box-side">
+                    <span class="icon-box-icon text-primary">
+                        {% if data.values.icon_3.image_thumb and data.values.icon_3.image_thumb != "" %}
+                            <img class="icon" width="40" height="40" src="{{ data.values.icon_3.image_thumb | imghttps}}">
+                        {% else %}
+                            <i class="icon-life-ring"></i>
+                        {% endif %}
+                    </span>
+
+                    <div class="icon-box-content">
+                        <h3 class="icon-box-title">{{ data.values.title_3 }}</h3><!-- End .icon-box-title -->
+                        <p>{{ data.values.subtitle_3 }}</p>
+                    </div><!-- End .icon-box-content -->
+                </div><!-- End .icon-box -->
+            </div><!-- End .col-sm-6 col-lg-3 -->
+        </div><!-- End .row -->
+    </div><!-- End .container -->
+</div><!-- End .icon-boxes-container -->

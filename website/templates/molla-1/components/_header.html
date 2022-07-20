@@ -1,0 +1,28 @@
+{% load static %}
+{% load to_json %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include '../../core/_seo.html' %}
+
+    <!-- Plugins CSS File -->
+    <link rel="stylesheet" href="{% static 'assets/molla-1/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/molla-1/css/plugins/owl-carousel/owl.carousel.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/molla-1/css/plugins/magnific-popup/magnific-popup.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/molla-1/css/plugins/jquery.countdown.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/molla-1/css/plugins/nouislider/nouislider.css' %}">
+   
+    <!-- Main CSS File -->
+    <link rel="stylesheet" href="{% static 'assets/molla-1/css/style.css' %}?v=1.2.12">
+    <link rel="stylesheet" href="{% static 'assets/molla-1/css/skins/skin-demo-10.css' %}?v=1.0.13">
+    <link rel="stylesheet" href="{% static 'assets/molla-1/css/demos/demo-10.css' %}?v=1.0.13">
+    
+    {% include '../../core/_css.html' %}
+
+</head>
+
+<body class="page-{{page_type}}">
+    {% include '../../core/_seo_body.html' %}
+
+    <div class="page-wrapper" id="tiktak-store-app">

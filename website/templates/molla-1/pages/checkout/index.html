@@ -1,0 +1,206 @@
+{% extends "../index.html" %}
+
+{% block body %}
+
+<main class="main">
+    <nav aria-label="breadcrumb" class="breadcrumb-nav">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Accueil</a></li>
+                <li class="breadcrumb-item"><a href="cart">Panier</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+            </ol>
+        </div><!-- End .container -->
+    </nav><!-- End .breadcrumb-nav -->
+
+    <div class="page-content">
+        <div class="checkout">
+            <div class="container">
+                <!-- <div class="checkout-discount">
+                    <form action="#">
+                        <input type="text" class="form-control" required id="checkout-discount-input">
+                        <label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here to enter your code</span></label>
+                    </form>
+                </div> -->
+                <form @submit.prevent="createOrder()">
+                    <div class="row">
+                        <div class="col-lg-9">
+                            <h2 class="checkout-title">Détails de la commande</h2><!-- End .checkout-title -->
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label>Nom et Prénom*</label>
+                                        <input type="text" v-model="order.name" class="form-control" required>
+                                    </div><!-- End .col-sm-6 -->
+
+                                </div><!-- End .row -->
+
+                                <label>Adresse *</label>
+                                <input type="text" v-model="order.address" class="form-control" required>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label>Gouvernorat *</label>
+                                        <select class="form-control" v-model="order.gouvernorat" @change="updateGouvernorat($event.target.value)">
+                                            <option v-for="(gouv, name, index) in gouvernorats" :value="name">[[ name ]]</option>
+                                        </select>
+                                    
+                                    </div><!-- End .col-sm-6 -->
+
+                                    <div class="col-sm-6">
+                                        <label>Délégation *</label>
+                                        <input type="text" name="city" list="delegations" v-model="order.delegation" class="form-control" required>
+                                        <datalist id="delegations">
+                                            <option v-for="dlg in options">[[ dlg ]]</option>
+                                        </datalist>
+                                    </div><!-- End .col-sm-6 -->
+                                </div><!-- End .row -->
+
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label>Code postal</label>
+                                        <input type="text" v-model="order.code_postal"  class="form-control">
+                                    </div><!-- End .col-sm-6 -->
+                                </div><!-- End .row -->
+
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label>Téléphone *</label>
+                                        <input type="tel" v-model="order.phone" class="form-control" required>
+                                    </div><!-- End .col-sm-6 -->
+
+                                    <div class="col-sm-6">
+                                        <label>Téléphone supplémentaire</label>
+                                        <input type="tel" v-model="order.phone_extra" class="form-control">
+                                    </div><!-- End .col-sm-6 -->
+                                </div><!-- End .row -->
+
+                                <label v-if="createAccount || logged">Email *</label>
+                                <label v-if="!createAccount && !logged">Email</label>
+                                <input type="email" v-model="order.email" class="form-control">
+
+
+                                <div class="row" v-if="createAccount">
+                                    <div class="col-sm-6">
+                                        <label>Mot de passe *</label>
+                                        <input type="password" class="form-control" required>
+                                    </div><!-- End .col-sm-6 -->
+
+                                    <div class="col-sm-6">
+                                        <label>Confirmer mot de passe *</label>
+                                        <input type="password" class="form-control">
+                                    </div><!-- End .col-sm-6 -->
+                                </div><!-- End .row -->
+
+                                <div class="custom-control custom-checkbox" v-if="!logged">
+                                    <input type="checkbox" v-model="createAccount" class="custom-control-input" id="checkout-create-acc">
+                                    <label class="custom-control-label" for="checkout-create-acc">Créer un compte?</label>
+                                </div><!-- End .custom-checkbox -->
+
+                                <label>Notes de commande (facultatif)</label>
+                                <textarea class="form-control" cols="30" rows="4" placeholder="Remarques concernant votre commande, par exemple notes spéciales pour la livraison"></textarea>
+                        </div><!-- End .col-lg-9 -->
+                        <aside class="col-lg-3">
+                            <div class="summary">
+                                <h3 class="summary-title">Votre Commande</h3><!-- End .summary-title -->
+
+                                <table class="table table-summary">
+                                    <thead>
+                                        <tr>
+                                            <th>Produits</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr v-for="(product, index) in cart._details" :key="product.name">
+                                            <td><a v-bind:href="[[ getProductLink(product._product) ]]">[[ product.product_name ]]</a></td>
+                                            <td>[[ product.final_price ]] {{ company.currency }}</td>
+                                        </tr>
+                                        <tr class="summary-subtotal">
+                                            <td>Sous-total:</td>
+                                            <td>[[ cart.subtotal ]] {{ company.currency }}</td>
+                                        </tr><!-- End .summary-subtotal -->
+                                        <tr v-if="cart.transport && company && company.works_with_transport">
+                                            <td>Transport:</td>
+                                            <td>[[ cart.transport.price ]] {{ company.currency }}</td>
+                                        </tr>
+
+                                        <!-- if no transporter foud and company works with transporter -->
+                                        <template v-if="!cart.transport && company && company.works_with_transport">
+                                            <tr class="summary-shipping">
+                                                <td>Transport:</td>
+                                                <td>&nbsp;</td>
+                                            </tr>
+                                            {% for transporter in transporters %}
+                                                <tr class="summary-shipping-row">
+                                                    <td>
+                                                        <div class="custom-control custom-radio">
+                                                            <input type="radio" id="{{transporter.id}}" name="shipping"
+                                                            {% if transporter.default %}
+                                                                checked="checked"
+                                                            {% endif %}
+                                                            
+                                                                class="custom-control-input" @click="updateCartTransporter({{transporter}})">
+                                                            <label class="custom-control-label" for="{{transporter.id}}">{{ transporter.name }}</label>
+                                                        </div><!-- End .custom-control -->
+                                                    </td>
+                                                    <td>{{ transporter.price }} {{ company.currency }}</td>
+                                                </tr><!-- End .summary-shipping-row -->
+                                            {% endfor %}
+                                        </template>
+                                        
+                                        <tr class="summary-total">
+                                            <td>Total:</td>
+                                            <td>[[ cart.total ]] {{ company.currency }}</td>
+                                        </tr><!-- End .summary-total -->
+                                    </tbody>
+                                </table><!-- End .table table-summary -->
+
+                                <div class="accordion-summary" id="accordion-payment">
+
+                                    <div class="card">
+                                        <div class="card-header" id="heading-1">
+                                            <h2 class="card-title">
+                                                <a role="button" @click="setPaymentType('CASH')" data-toggle="collapse" href="#collapse-1" aria-expanded="true" aria-controls="collapse-1">
+                                                    Payer à la livraison
+                                                </a>
+                                            </h2>
+                                        </div><!-- End .card-header -->
+                                        <div id="collapse-1" class="collapse show" aria-labelledby="heading-1" data-parent="#accordion-payment">
+                                            <div class="card-body">
+                                                Votre commande sera expédiée bientôt et vous pourrez payer lorsque vous la recevrez.                                            
+                                            </div><!-- End .card-body -->
+                                        </div><!-- End .collapse -->
+                                    </div><!-- End .card -->
+                                    {% if company.config_payment_status and not company.active_pack.name == "Demo" %}
+                                        <div class="card">
+                                            <div class="card-header" id="heading-2">
+                                                <h2 class="card-title">
+                                                    <a class="collapsed" @click="setPaymentType('ONLINE')" role="button" data-toggle="collapse" href="#collapse-2" aria-expanded="false" aria-controls="collapse-2">
+                                                        Payer en ligne
+                                                    </a>
+                                                </h2>
+                                            </div><!-- End .card-header -->
+                                            <div id="collapse-2" class="collapse" aria-labelledby="heading-2" data-parent="#accordion-payment">
+                                                <div class="card-body">
+                                                    Effectuez votre paiement directement sur notre compte bancaire. Veuillez utiliser votre ID de commande comme référence de paiement. Votre commande ne sera pas expédiée tant que les fonds n'auront pas été crédités sur notre compte.                                               
+                                                </div><!-- End .card-body -->
+                                            </div><!-- End .collapse -->
+                                        </div><!-- End .card -->
+                                    {% endif %}
+
+                                </div><!-- End .accordion -->
+
+                                <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
+                                    <span class="btn-text">Passer la commande</span>
+                                    <span class="btn-hover-text">Passer la commande</span>
+                                </button>
+                            </div><!-- End .summary -->
+                        </aside><!-- End .col-lg-3 -->
+                    </div><!-- End .row -->
+                </form>
+            </div><!-- End .container -->
+        </div><!-- End .checkout -->
+    </div><!-- End .page-content -->
+</main><!-- End .main -->
+
+{% endblock %}

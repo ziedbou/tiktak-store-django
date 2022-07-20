@@ -1,0 +1,9 @@
+<template v-if="true" v-for="msg in bottomSectionMessages">
+
+<div class="header-message ng-star-inserted"  v-if="msg.message"
+    style = "padding: 15px 0; text-align: center;" 
+    v-bind:style= "[msg.color ? {'background-color': msg.color} : {'background-color': 'white'}]"
+    >
+    <p v-html="msg.message"></p>
+</div>
+</template>

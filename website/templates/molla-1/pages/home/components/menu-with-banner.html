@@ -1,0 +1,82 @@
+{% load get_link %}
+{% load images_tags %}
+
+<div class="container mb-3" id="section-{{key}}">
+    <div class="row">
+        <div class="col-lg-3 col-md-4">
+            <nav class="side-nav">
+                <div class="sidenav-title">PARCOURIR LES CATÉGORIES</div><!-- End .sidenav-title -->
+                <ul class="menu-vertical sf-arrows sf-js-enabled">
+                    {% for menu in data.values.menu_data %}
+                    <li class="">
+                        {% if menu.submenu|length %}
+                        <a href="#" class="sf-with-ul">{{ menu.label }}</a>
+                        {% else %}
+                        <a href="{{menu | get_link}}">{{ menu.label }}</a>
+                        {% endif %}
+                        <!-- submenu -->
+                        {% if menu.submenu|length %}
+                        <div class="megamenu megamenu-sm" style="display: none;">
+                            <div class="row no-gutters">
+                                <div class="col-md-6">
+                                    <div class="menu-col">
+                                        <div class="menu-title">{{menu.label}}</div><!-- End .menu-title -->
+                                        <ul>
+                                            {% for submenu in menu.submenu %}
+                                            <li>
+                                                <a href="{{menu | get_link}}">{{submenu.label}}</a>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div><!-- End .menu-col -->
+                                </div><!-- End .col-md-6 -->
+                            </div><!-- End .row -->
+                        </div><!-- End .megamenu megamenu-sm -->
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul><!-- End .menu -->
+            </nav><!-- End .side-nav -->
+        </div><!-- End .col-lg-3 -->
+        <div class="col-lg-9 col-md-8">
+
+            <div class="banner-owl">
+
+                <div class="intro-slider owl-carousel owl-simple owl-light owl-nav-inside" data-toggle="owl" data-owl-options='{"nav": false}'>
+                    {% for image in data.values.images %}
+                    <div class="intro-slide">
+                        <figure class="slide-image">
+                            <picture>
+                                <img src="{{ image.image|imghttps}}" alt="Image Desc">
+                            </picture>
+                        </figure><!-- End .slide-image -->
+                    </div><!-- End .intro-slide -->
+                    {% endfor %}
+                </div><!-- End .intro-slider owl-carousel owl-simple -->
+            </div><!-- End .banner -->
+        </div><!-- End .col-lg-6 -->
+    </div><!-- End .row -->
+</div>
+
+<style type="text/css">
+    .menu-vertical a.sf-with-ul:hover{
+    &+.megamenu {
+        display: block !important;
+    }
+}
+
+.menu-vertical li:hover {
+   .megamenu {
+        display: block !important;
+    }
+}
+
+.menu-vertical li {
+    position: initial;
+}
+
+:host {
+    margin-bottom: 30px;
+    display: block;
+}
+</style>

@@ -1,0 +1,195 @@
+{% extends "../index.html" %}
+{% block body %}
+
+<main class="main">
+    <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Accueil</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Mon Compte</li>
+            </ol>
+        </div><!-- End .container -->
+    </nav><!-- End .breadcrumb-nav -->
+
+    <div class="page-content">
+        <div class="dashboard">
+            <div class="container">
+                <div class="row">
+                    <aside class="col-md-4 col-lg-3">
+                        <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
+                            <li class="nav-item active">
+                                <a class="nav-link" id="tab-dashboard-link" data-toggle="tab" href="#tab-dashboard" role="tab" aria-controls="tab-dashboard" aria-selected="true">Tableau de bord</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-orders-link" data-toggle="tab" href="#tab-orders" role="tab" aria-controls="tab-orders" aria-selected="false">Commandes</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address" role="tab" aria-controls="tab-address" aria-selected="false">Adresses</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account" role="tab" aria-controls="tab-account" aria-selected="false">Détails du compte</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-danger" href="/" @click="logout()">Se déconnecter</a>
+                            </li>
+                        </ul>
+                    </aside><!-- End .col-lg-3 -->
+
+                    <div class="col-md-8 col-lg-9">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-link">
+                                <p>Bonjour <span class="font-weight-normal text-dark">[[ user?.first_name + ' ' + user?.last_name ]] </span> 
+                                <br>
+                                À partir du tableau de bord de votre compte, vous pouvez voir vos <a href="#tab-orders" class="tab-trigger-link link-underline" data-toggle="tab">commandes récentes</a>, gérer vos <a href="#tab-address" class="tab-trigger-link" data-toggle="tab">adresses de livraison et de facturation</a>, et <a href="#tab-account" class="tab-trigger-link" data-toggle="tab"> modifier votre détails de votre compte.</a>.</p>
+                            </div><!-- .End .tab-pane -->
+
+                            <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
+
+
+                                <p v-if="customerOrders.length == 0">Aucune commande n'a encore été passée.</p>
+
+                                <!-- style="overflow: scroll;height: 700px;display: block;" -->
+                                <table class="table table-wishlist table-mobile" v-if="customerOrders.length > 0">
+                                    <thead>
+                                        <tr>
+                                            <th>Numéro</th>
+                                            <th>Date</th>
+                                            <th>Total</th>
+                                            <th>Statut</th>
+                                            <!-- <th></th> --> 
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="order in customerOrders">
+                                            <td class="product-col">[[ order.order_number ]]</td>
+                                            <td>[[ formatDate(order.created_at) ]]</td>
+                                            <td class="price-col"> [[ order.total_after_discount ]] {{ company.currency }}</td>
+                                            <td class="stock-col"><span class="in-stock">[[ order.step_name ]]</span></td>
+                                            <!-- <td><button class="btn btn-primary">Détails</button></td> -->
+                                        </tr>    
+                                    </tbody>
+                                </table>
+                  
+                                <a href="/" class="btn btn-outline-primary-2"><span>ALLER AU BOUTIQUE</span><i class="icon-long-arrow-right"></i></a>
+
+                            </div><!-- .End .tab-pane -->
+
+                            <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
+                                <button class="btn btn-outline-primary-2 mb-1" @click="addAdress()">
+                                    Ajouter une nouvelle adresse
+                                </button>
+
+                                <div class="row">
+                                    <div class="col-lg-6" v-for="(address, index) in user.customer.addresses">
+                                        <div class="card card-dashboard">
+
+                                            <div class="card-body">
+                                                <h3 class="card-title">[[ address.title ]]</h3><!-- End .card-title -->
+
+                                                <p>[[ address?.contact ]]<br>
+                                                
+                                                [[ address?.address ]]<br>
+                                                [[ address?.gouvernorat ]]<br>
+                                                [[ address?.delegation ]]<br>
+
+                                                <br>
+                                                [[ address?.code_postal ]]<br>
+                                                    <a href="#" @click="openAddressModal(address, index)" data-toggle="modal">Modifier <i class="icon-edit"></i></a>
+                                                    <a class="ml-2" @click="deleteAdress(index, $event)" href="#">Supprimer <i class="icon-close"></i></a>
+                                                </p>
+                                            </div><!-- End .card-body -->
+                                        </div><!-- End .card-dashboard -->
+                                    </div><!-- End .col-lg-6 -->
+
+                                </div><!-- End .row -->
+                            </div><!-- .End .tab-pane -->
+
+                            <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link">
+                                
+
+                                <div v-if="UserSubmitMessage != ''" class="alert" role="alert" :class="UserSubmitError ? 'alert-danger' : 'alert-success'">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true"><i class="icon-close"></i></span>
+                                    </button>
+
+                                    [[ UserSubmitMessage ]]                    
+                                </div>
+                                <form @submit.prevent="updateUser()">
+
+                                    <label>Nom et Prénom *</label>
+                                    <input type="text" class="form-control" v-model="user.customer.name" required="">
+
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <label>Téléphone *</label>
+                                            <input type="tel" class="form-control" v-model="user.customer.phone" required="">
+                                        </div><!-- End .col-sm-6 -->
+
+                                        <div class="col-sm-6">
+                                            <label>Téléphone supplémentaire</label>
+                                            <input type="tel" class="form-control" v-model="user.customer.phone_extra">
+                                        </div><!-- End .col-sm-6 -->
+                                    </div><!-- End .row -->
+
+                                    <label>Code tva (facultatif)</label>
+                                    <input type="text" class="form-control" v-model="user.customer.code_tva">
+
+                                    <button type="submit" class="btn btn-outline-primary-2">
+                                        <span>ENREGISTRER</span>
+                                        <i class="icon-long-arrow-right"></i>
+                                    </button>
+                                </form>
+                            </div><!-- .End .tab-pane -->
+                        </div>
+                    </div><!-- End .col-lg-9 -->
+                </div><!-- End .row -->
+            </div><!-- End .container -->
+        </div><!-- End .dashboard -->
+    </div><!-- End .page-content -->
+</main>
+
+<div class="modal fade" id="address-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="icon-close"></i></span>
+                </button>
+
+                <div class="form-box">
+                    <form @submit.prevent="updateCustomerAddress()">
+                        <label>Titre</label>
+                        <input type="text" class="form-control" v-model="addressToEdit.title">
+
+                        <label>Contact</label>
+                        <input type="text" class="form-control" v-model="addressToEdit.contact">
+                        
+                        <label>Adresse</label>
+                        <input type="text" class="form-control" v-model="addressToEdit.address" required>
+
+                        <label>Gouvernorat</label>
+                        <select class="form-control" v-model="addressToEdit.gouvernorat" @change="updateGouvernorat($event.target.value)" required>
+                            <option v-for="(gouv, name, index) in gouvernorats" :value="name">[[ name ]]</option>
+                        </select>
+
+                        <label>Délégation</label>
+                        <input type="text" name="city" list="delegations" v-model="addressToEdit.delegation" class="form-control" required>
+                        <datalist id="delegations">
+                            <option v-for="dlg in options">[[ dlg ]]</option>
+                        </datalist>
+                        
+                        <label>Code postal</label>
+                        <input type="text" class="form-control" v-model="addressToEdit.code_postal">
+
+                        <button type="submit" class="btn btn-outline-primary-2">
+                            <span>Enregistrer</span>
+                            <i class="icon-long-arrow-right"></i>
+                        </button>
+                    </form>
+                </div><!-- End .form-box -->
+            </div><!-- End .modal-body -->
+        </div><!-- End .modal-content -->
+    </div><!-- End .modal-dialog -->
+</div><!-- End .modal -->
+
+{% endblock %}

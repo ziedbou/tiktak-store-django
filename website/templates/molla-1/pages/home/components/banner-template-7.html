@@ -1,0 +1,79 @@
+{% load images_tags %}
+
+<div class="container">
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="banner banner-cat">
+                <a href="{{data.values.url_1}}">
+                    <img src="{{ data.values.image_1.image | imghttps}}" alt="Banner">
+                </a>
+
+                <div class="banner-content">
+                    <h3 class="banner-title">{{ data.values.title_1 }}</h3><!-- End .banner-title -->
+                    <h4 class="banner-subtitle">{{ data.values.subtitle_1 }}</h4><!-- End .banner-subtitle -->
+                    <a href="{{data.values.url_1}}" class="banner-link">{{ data.values.text_1 }}</a>
+                </div><!-- End .banner-content -->
+            </div><!-- End .banner -->
+        </div><!-- End .col-md-6 -->
+
+        <div class="col-md-6">
+            <div class="banner banner-cat">
+                <a href="{{data.values.url_2}}">
+                    <img src="{{ data.values.image_2.image | imghttps}}" alt="Banner">
+                </a>
+
+                <div class="banner-content">
+                    <h3 class="banner-title">{{ data.values.title_2 }}</h3><!-- End .banner-title -->
+                    <h4 class="banner-subtitle">{{ data.values.subtitle_2 }}</h4><!-- End .banner-subtitle -->
+                    <a href="{{data.values.url_2}}" class="banner-link">{{ data.values.text_2 }}</a>
+                </div><!-- End .banner-content -->
+            </div><!-- End .banner -->
+        </div><!-- End .col-md-6 -->
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="banner banner-cat">
+                <a href="{{data.values.url_3}}">
+                    <img src="{{ data.values.image_3.image | imghttps}}" alt="Banner">
+                </a>
+
+                <div class="banner-content">
+                    <h3 class="banner-title">{{ data.values.title_3 }}</h3><!-- End .banner-title -->
+                    <h4 class="banner-subtitle">{{ data.values.subtitle_3 }}</h4><!-- End .banner-subtitle -->
+                    <a href="{{data.values.url_3}}" class="banner-link">{{ data.values.text_3 }}</a>
+                </div><!-- End .banner-content -->
+            </div><!-- End .banner -->
+        </div><!-- End .col-md-4 -->
+
+        <div class="col-md-4">
+            <div class="banner banner-cat">
+                <a href="{{data.values.url_4}}">
+                    <img src="{{ data.values.image_4.image | imghttps}}" alt="Banner">
+                </a>
+
+                <div class="banner-content">
+                    <h3 class="banner-title">{{ data.values.title_4 }}</h3><!-- End .banner-title -->
+                    <h4 class="banner-subtitle">{{ data.values.subtitle_4 }}</h4><!-- End .banner-subtitle -->
+                    <a href="{{data.values.url_4}}" class="banner-link">{{ data.values.text_4 }}</a>
+                </div><!-- End .banner-content -->
+            </div><!-- End .banner -->
+        </div><!-- End .col-md-4 -->
+
+        <div class="col-md-4">
+            <div class="banner banner-cat">
+                <a href="{{data.values.url_5}}">
+                    <img src="{{ data.values.image_5.image | imghttps}}" alt="Banner">
+                </a>
+
+                <div class="banner-content">
+                    <h3 class="banner-title">{{ data.values.title_5 }}</h3><!-- End .banner-title -->
+                    <h4 class="banner-subtitle">{{ data.values.subtitle_5 }}</h4><!-- End .banner-subtitle -->
+                    <a href="{{data.values.url_5}}" class="banner-link">{{ data.values.text_5 }}</a>
+                </div><!-- End .banner-content -->
+            </div><!-- End .banner -->
+        </div><!-- End .col-md-4 -->
+    </div>
+
+</div>

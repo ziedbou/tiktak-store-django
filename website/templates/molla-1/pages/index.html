@@ -1,0 +1,25 @@
+<!-- header -->
+{% include '../components/_header.html' %}
+
+<!-- TOP MESSAGES -->
+<template v-if="topSectionMessages.length > 0">
+    {% include "./home/components/messagesTop.html" %}
+</template>
+
+<!-- topbar -->
+{% include '../components/_topbar.html' %}
+
+<!-- body -->
+{% block body %}
+
+{% endblock  %}
+
+<!-- footer -->
+{% include '../components/_footer.html' %}
+
+<!-- js -->
+{% include '../components/_js.html' %}
+
+{% block javascript %}
+
+{% endblock %}

@@ -1,0 +1,231 @@
+{% extends "../index.html" %}
+{% load prod_tags %}
+{% load to_json %}
+{% load images_tags %}
+
+
+{% block body %}
+
+<main class="main">
+    <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
+        <div class="container d-flex align-items-center">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Accueil</a></li>
+                <li class="breadcrumb-item"><a href="/product-list/{{category.id}}/{{category.name|lower}}">{{ category.name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+            </ol>
+        </div><!-- End .container -->
+    </nav><!-- End .breadcrumb-nav -->
+    <div class="page-content">
+        <div class="container">
+            <div class="product-details-top">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="product-gallery product-gallery-vertical">
+                            <div class="row">
+                                <figure class="product-main-image">
+                                    {% if product.discount > 0 %}
+                                    <span class="product-label label-sale">En promotion!</span>
+                                    {% endif %}
+                                    <img id="product-zoom" src="{{product.photo | imghttps}}" data-zoom-image="{{product.photo}}" alt="{{ product.name }}">
+                                </figure><!-- End .product-main-image -->
+                                <div id="product-zoom-gallery" class="product-image-gallery">
+                                    {% with images=product|image_thumb %}
+                                    {% for image in images %}
+                                    <a class="product-gallery-item" @click="changeSelectedImage({{image}}, $event)" href="#" data-image="{{image.image_thumb | imghttps}}" data-zoom-image="{{image.image}}">
+                                        <img src="{{image.image_thumb | imghttps}}" alt="{{ product.name }}">
+                                    </a>
+                                    {% endfor %}
+                                  {% endwith %}
+                                </div><!-- End .product-image-gallery -->
+                            </div><!-- End .row -->
+                        </div><!-- End .product-gallery -->
+                    </div><!-- End .col-md-6 -->
+                    <div class="col-md-6">
+                        <div class="product-details">
+                            <h1 class="product-title">{{ product.name }}</h1><!-- End .product-title -->
+                            <div class="product-price">
+                                {% if product.discount > 0 %}
+                                <span class="new-price">{{ product | calculate_new_price }} {{company.currency}}</span>
+                                <span class="old-price">{{ product.price }} {{company.currency}}</span>
+                                {% else %}
+                                {{ product.price }} {{company.currency}}
+                                {% endif %}
+                            </div><!-- End .product-price -->
+                            {% if product.active_stock and product.stock < 1 and not product.order_without_stock %} <div class=" mt-2 mb-2">
+                                <span class="alert alert-danger">Produit en rupture de stock</span>
+                        </div>
+                        {% endif %}
+                        <div class="product-content">
+                            {{ product.description | safe }}
+                        </div><!-- End .product-content -->
+                        <!-- DISPLAY IMAGES THUMBS FOR COLORS -->
+                        {% with hasColor=product|hasSubProductsColor %}
+
+                        <div class="details-filter-row details-row-size mt-2">
+                            <table class="table option-table">
+                                <!-- DISPLAY DYNAMIC DIFFRENT DECLINAISONS -->
+                                {% if product.declinaisons|length %}
+                                <tr v-for="(option, index) in pOptions">
+                                    <td v-if="isEnabled(option.id)">[[ option.name ]] :</td>
+                                    <td v-if="isEnabled(option.id) && !option.is_color_group">
+                                        <select class="form-control" v-model="filterForm[option.id]" v-on:change="enableNext(index)">
+                                            <option value="" selected="selected">Sélectionnez un(e) [[ option.name ]]</option>
+                                            <option v-for="val in attributSteps[index].options" :value="val.id">[[ val.name ]]</option>
+                                        </select>
+                                    </td>
+                                    {% if hasColor %}
+                                    <td v-if="isEnabled(option.id) && option.is_color_group">
+                                        <div class="product-nav product-nav-thumbs">
+                                            {% with attrColors=product|findColors %}
+                                            {% for color in attrColors %}
+                                                {% if color.image  %}
+                                                <a href="#" class="color-pick"  v-bind:class="{ active: {{color.id}} == colorSelected }" data-toggle="tooltip" data-placement="top" title="Sélectionnez {{color.name}}" @click="selectColor(option, {{color}},index, true, $event)">
+                                                    <img src="{{color.image_thumb | imghttps}}" alt="{{ product.name }}">
+                                                </a>
+                                                {% else %}
+                                            
+                                                <span  data-toggle="tooltip" data-placement="top" title="Sélectionnez {{color.name}}" @click="selectColor(option, {{color}},index, false, $event)"  class="color-pick" v-bind:class="{ active: {{color.id}} == colorSelected }" style="background-color: 
+                                                {{color.color}} "></span>
+                                                
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% endwith %}
+                                        </div><!-- End .product-nav -->
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <td>Quantité:</td>
+                                    <td>
+                                        <div class="product-details-quantity">
+                                            <input type="number" id="qty" v-model="productQte" class="form-control" value="1" min="1" max="10" step="1" data-decimals="0" required="" style="display: none;">
+                                        </div><!-- End .product-details-quantity -->
+                                    </td>
+                                </tr>
+                                
+                            </table>
+                        </div>
+                        {% endwith %}
+                        <!-- DISPLAY DYNAMIC DIFFRENT DECLINAISONS -->
+                        <div class="product-details-action">
+                           
+                        <a href="#" @click="addToCart(productQte, $event)" class="btn-product btn-cart"><span>Ajouter au panier</span></a>
+                            <div class="details-action-wrapper">
+                                <a href="#" v-if="logged" @click="addToWishlist({{product.id}}, $event)" class="btn-product btn-wishlist" title="Wishlist"><span>Ajouter aux Favoris</span></a>
+                            </div><!-- End .details-action-wrapper -->
+                        </div><!-- End .product-details-action -->
+                        <div class="product-details-footer">
+                            <div class="social-icons social-icons-sm">
+                                <span class="social-label">Partager:</span>
+                                <a href="https://www.facebook.com/sharer/sharer.php?u={{seo.url}}" class="social-icon" title="Facebook" target="_blank"><i class="icon-facebook-f"></i></a>
+                                <a href="https://twitter.com/intent/tweet?url={{seo.url}}&text={{product.name}}" class="social-icon" title="Twitter" target="_blank"><i class="icon-twitter"></i></a>
+                                <a href="https://api.whatsapp.com/send?text={{seo.url}}" class="social-icon" title="whatsapp" target="_blank"><i class="icon-whatsapp"></i></a>
+                                <a href="https://pinterest.com/pin/create/button/?url={{seo.url}}&media={{product.photo |imghttps }}&description={{product.name}}" class="social-icon" title="Pinterest" target="_blank"><i class="icon-pinterest"></i></a>
+                            </div>
+                        </div><!-- End .product-details-footer -->
+                    </div><!-- End .product-details -->
+                </div><!-- End .col-md-6 -->
+            </div><!-- End .row -->
+        </div><!-- End .product-details-top -->
+        <div class="product-details-tab">
+            <ul class="nav nav-pills justify-content-center" role="tablist">
+                {% for feature in product.features %}
+                <li class="nav-item">
+                    {% if forloop.counter == 1 %}
+                    <a class="nav-link active" id="product-desc-{{forloop.counter}}" data-toggle="tab" href="#product-desc-tab-{{ forloop.counter }}" role="tab" aria-controls="product-desc-tab-{{ forloop }}" aria-selected="true">{{feature.name}}</a>
+                    {% else %}
+                    <a class="nav-link" id="product-desc-{{forloop.counter}}" data-toggle="tab" href="#product-desc-tab-{{ forloop.counter }}" role="tab" aria-controls="product-desc-tab-{{ forloop.counter }}" aria-selected="true">{{feature.name}}</a>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            <div class="tab-content">
+                {% for feature in product.features %}
+                {% if forloop.counter == 1 %}
+                <div class="tab-pane fade show active" id="product-desc-tab-{{ forloop.counter }}" role="tabpanel" aria-labelledby="product-desc-{{forloop.counter}}">
+                    {% else %}
+                    <div class="tab-pane fade" id="product-desc-tab-{{ forloop.counter }}" role="tabpanel" aria-labelledby="product-desc-{{forloop.counter}}">
+                        {% endif %}
+                        <div class="product-desc-content">
+                            <p>{{ feature.value }}</p>
+                        </div><!-- End .product-desc-content -->
+                    </div><!-- .End .tab-pane -->
+                    {% endfor %}
+                </div><!-- End .tab-content -->
+            </div><!-- End .product-details-tab -->
+            <h2 class="title text-center mb-4">Tu pourrais aussi aimer</h2><!-- End .title text-center -->
+            <div class="owl-carousel owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl" data-owl-options='{
+                "nav": false, 
+                "dots": true,
+                "margin": 20,
+                "loop": false,
+                "responsive": {
+                    "0": {
+                        "items":1
+                    },
+                    "480": {
+                        "items":2
+                    },
+                    "768": {
+                        "items":3
+                    },
+                    "992": {
+                        "items":4
+                    },
+                    "1200": {
+                        "items":4,
+                        "nav": true,
+                        "dots": false
+                    }
+                }
+            }'>
+                {% for relatedProd in relatedProducts %}
+                <div class="product product-7 text-center">
+                    <figure class="product-media">
+                        {% if relatedProd.active_stock and relatedProd.stock < 1 and not relatedProd.order_without_stock %} <span class="product-label label-out">En rupture de stock</span>
+                            {% endif %}
+                            {% if relatedProd.discount > 0 %}
+                            <span class="product-label label-sale">En promotion!</span>
+                            {% endif %}
+                            <a href="{{ relatedProd | get_prod_link }}">
+                                <img src="{{ relatedProd.photo | imghttps }}" alt="{{ relatedProd.name }}" class="product-image">
+                            </a>
+                            <div class="product-action-vertical">
+                                <a href="#" v-if="logged" @click="addToWishlist({{relatedProd.id}}, $event)" class="btn-product-icon btn-wishlist btn-expandable"><span>Ajouter aux Favoris</span></a>
+                            </div><!-- End .product-action-vertical -->
+                            <div class="product-action">
+                                <a href="{{ relatedProd | get_prod_link }}" class="btn-product"><span>Afficher produit</span></a>
+                            </div><!-- End .product-action -->
+                    </figure><!-- End .product-media -->
+                    <div class="product-body">
+                        <div class="product-cat">
+                            <a href="#">Women</a>
+                        </div><!-- End .product-cat -->
+                        <h3 class="product-title"><a href="{{ relatedProd | get_prod_link }}">{{ relatedProd.name }}</a></h3><!-- End .product-title -->
+                        <div class="product-price">
+                            {% if relatedProd.discount > 0 %}
+                            <span class="new-price">{{ relatedProd | calculate_new_price }} {{company.currency}}</span>
+                            <span class="old-price">{{ relatedProd.price }} {{company.currency}} </span>
+                            {% else %}
+                            {{ relatedProd.price }} {{company.currency}}
+                            {% endif %}
+                        </div><!-- End .product-price -->
+                    </div><!-- End .product-body -->
+                </div>
+                {% endfor %}
+            </div><!-- End .owl-carousel -->
+        </div><!-- End .container -->
+    </div><!-- End .page-content -->
+</main>
+{% endblock %}
+
+ 
+{% block javascript %}
+ <script type="text/javascript">
+        $( document ).ready(function() {
+            $('#product-zoom-gallery').height($('#product-zoom').height());
+        })
+ </script>
+{% endblock %}

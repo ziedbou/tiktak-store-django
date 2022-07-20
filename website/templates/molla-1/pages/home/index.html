@@ -1,0 +1,90 @@
+{% extends "../index.html" %}
+{% block body %}
+
+        <main class="main">
+
+            {% for section in sections %}
+                
+                {% with key=forloop.counter %}  
+
+                    {% if section.active %}
+
+                        {% if section.slug == 'menu-with-banner' %}
+                            {% include "./components/menu-with-banner.html" with data=section %}
+                        {% endif %}
+
+                        {% if section.slug == 'message' and section.values.position == 'classic' %}
+                            {% include "./components/message.html" with data=section %}
+                        {% endif %}
+
+                        {% if section.slug == 'banner-simple' %}
+                            {% include "./components/banner-simple.html" with data=section %}
+                        {% endif %}
+
+                        {% if section.slug == 'background-fixed' %}
+                            {% include "./components/background-fixed.html" with data=section %}
+                        {% endif %}
+
+                        {% if section.slug == 'banner-template-1' %}
+                            {% include "./components/banner-template-1.html" with data=section %}
+                        {% endif %}
+
+                        {% if section.slug == 'banner-template-5' %}
+                            <p>banner-template-5</p>
+                        {% endif %}
+
+                        {% if section.slug == 'banner-template-7' %}
+                            {% include "./components/banner-template-7.html" with data=section %}
+                        {% endif %}
+
+                        {% if section.slug == 'guarantee-template-7' %}
+                            {% include "./components/guarantee-template-7.html" with data=section %}
+                        {% endif %}
+
+                        {% if section.slug == 'banner-template-8' %}
+                            <p>banner-template-8</p>
+                        {% endif %}
+
+                        {% if section.slug == 'banner-template-9' %}
+                            <p>banner-template-9</p>
+                        {% endif %}
+
+                        {% if section.slug == 'banner-template-17' %}
+                            <p>banner-template-17</p>
+                        {% endif %}
+
+                        {% if section.slug == 'banner-simple-template-4' %}
+                            <p>banner-simple-template-4</p>
+                        {% endif %}
+
+                        {% if section.slug == 'banner-simple-template-10' %}
+                            {% include "./components/banner-template-10.html" with data=section %}
+                        {% endif %}
+
+                        {% if section.slug == 'banner-slider-template-10' %}
+                            {% include "./components/banner-slider-template-10.html" with data=section %}
+                        {% endif %}
+                        
+                        {% if section.slug == 'banner-slider-template-32' %}
+                            <p>banner-slider-template-32</p>
+                        {% endif %}
+
+                        {% if section.slug == 'products-list-slider-template-7' %}
+                            <p>products-list-slider-template-7</p>
+                        {% endif %}
+
+                        {% if section.slug == 'products-list-slider-template-9' %}
+                            {% include "./components/products-list-slider-template-9.html" with data=section key=key %}
+                        {% endif %}
+
+
+                        {% if section.slug == 'products-list-simple-template-9' %}
+                            {% include "./components/products-list-simple-template-9.html" with data=section key=key %}
+                        {% endif %}
+                    {% endif %}
+
+                {% endwith %}
+            {% endfor %}
+        </main><!-- End .main -->
+
+{% endblock %}

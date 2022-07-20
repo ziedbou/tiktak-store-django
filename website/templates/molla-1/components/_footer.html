@@ -1,0 +1,110 @@
+{% load static %}
+{% load get_link %}
+
+        <footer class="footer">
+            <div class="footer-middle">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="widget widget-about">
+                                <img src="{{ "https://api.tiktak.space"|add:company.logo }}" class="footer-logo" alt="Footer Logo" width="105" height="25">
+                                {% comment %} <img src="{{ "https://api.tiktak.space/"|add:company.logo }}" class="footer-logo" alt="Footer Logo" width="105" height="25"> {% endcomment %}
+                                {{ company_info.homepage_settings.footer_description | safe }}
+
+                                <div class="social-icons">
+                                    {% if social_links.facebook and social_links.facebook != "" %}
+                                        <a href="https://www.facebook.com/{{ social_links.facebook }}" class="social-icon" title="Facebook" target="_blank"><i class="icon-facebook-f"></i></a>
+                                    {% endif %}
+
+                                    {% if social_links.whatsapp and social_links.whatsapp != "" %}
+                                        <a href="https://wa.me/{{ social_links.whatsapp }}" class="social-icon" title="Whatsapp" target="_blank"><i class="icon-whatsapp"></i></a>
+                                    {% endif %}
+                                    
+                                    {% if social_links.twitter and social_links.twitter != ""  %}
+                                        <a href="https://twitter.com/{{ social_links.twitter }}" class="social-icon" title="Twitter" target="_blank"><i class=""></i></a>
+                                    {% endif %} 
+                                    
+                                    {% if social_links.instagram and social_links.instagram != "" %}
+                                        <a href="https://www.instagram.com/{{ social_links.instagram }}" class="social-icon" title="Instagram" target="_blank"><i class="icon-instagram"></i></a>
+                                    {% endif %}
+                                    
+                                    {% if social_links.youtube and social_links.youtube != "" %}
+                                        <a href="https://www.youtube.com/channel/{{ social_links.youtube }}" class="social-icon" title="Youtube" target="_blank"><i class="icon-youtube"></i></a>
+                                    {% endif %}
+
+                                    {% if social_links.linkedin and social_links.linkedin != "" %}
+                                        <a href="https://www.linkedin.com/in/{{ social_links.linkedin }}" class="social-icon" title="Linkedin" target="_blank"><i class="icon-linkedin"></i></a>
+                                    {% endif %}
+
+                                    {% if social_links.snapchat and social_links.snapchat != "" %}
+                                        <a href="http://www.snapchat.com/add/{{ social_links.snapchat }}" class="social-icon" title="Snapchat" target="_blank"><i class="icon-snapchat"></i></a>
+                                    {% endif %}         
+                                    
+                                    {% if social_links.tiktok and social_links.tiktok != "" %}
+                                        <a href="https://www.tiktok.com/@{{ social_links.tiktok }}" class="social-icon" title="Tiktok" target="_blank">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-tiktok" viewBox="0 0 16 16">
+                                                <path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3V0Z"/>
+                                            </svg>
+                                        </a>
+                                    {% endif %}                    
+                                </div><!-- End .soial-icons -->
+                            </div><!-- End .widget about-widget -->
+                        </div><!-- End .col-sm-6 col-lg-3 -->
+
+                        {% for menu in footer %}
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="widget">
+                                        <h4 class="widget-title">{{ menu.label }}</h4><!-- End .widget-title -->
+                                    {% if menu.submenu|length > 0 %}
+                                        <ul class="widget-list">    
+                                            {% for submenu in menu.submenu %}
+                                                {% if submenu.type == "extern" %}
+                                                    <li><a href="{{ submenu.href }}">{{submenu.label}}</a></li>
+                                                {% else %}
+                                                    <li><a href="{{ submenu | get_link }}">{{submenu.label}}</a></li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+
+                                </div><!-- End .widget -->
+                            </div><!-- End .col-sm-6 col-lg-3 -->
+                        {% endfor %}
+
+                    </div><!-- End .row -->
+                </div><!-- End .container -->
+            </div><!-- End .footer-middle -->
+
+            <div class="footer-bottom">
+                <div class="container">
+                    <p class="footer-copyright">Copyright © 2022 TikTak PRO. All Rights Reserved.</p><!-- End .footer-copyright -->
+               
+                </div><!-- End .container -->
+            </div><!-- End .footer-bottom -->
+        </footer><!-- End .footer -->
+
+
+        <div id="loading-wrapper"  v-if="loading">
+          <div id="loading-text">LOADING</div>
+          <div id="loading-content"></div>
+        </div>
+
+        <!-- BOTTOM MESSAGES -->
+        <template v-if="bottomSectionMessages.length > 0">
+            {% include "../pages/home/components/messagesBottom.html" %}
+        </template>
+        
+        <!-- login & signIn modal -->
+        {% include './modals/_loginSigninModal.html' %}
+
+        <!-- addToCart modal -->
+        {% include './modals/_addToCartModal.html' %}
+
+ <!-- addToCart modal -->
+        {% include './modals/_successModal.html' %}
+
+    </div><!-- End .page-wrapper -->
+
+<!-- mobile menu -->
+{% include '../components/_mobileMenu.html' %}
+

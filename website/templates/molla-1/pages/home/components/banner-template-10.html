@@ -1,0 +1,20 @@
+{% load images_tags %}
+<div class="container">
+    <div class="cta cta-horizontal cta-horizontal-box bg-image" style="background-image: url({{data.values.image.image | imghttps}});">
+        <div class="row flex-column flex-lg-row align-items-lg-center">
+            <div class="col">
+                <h3 class="cta-title text-primary">{{data.values.title}}</h3><!-- End .cta-title -->
+                <p class="cta-desc">
+                    <em class="font-weight-medium">{{data.values.subtitle}}</em>
+                </p><!-- End .cta-desc -->
+            </div><!-- End .col -->
+            
+            <div class="col-auto">
+                <a href="data.values.link" class="btn btn-white-primary btn-round">
+                    <span>{{data.values.button}}</span>
+                    <i class="icon-long-arrow-right"></i>
+                </a>
+            </div><!-- End .col-auto -->
+        </div><!-- End .row -->
+    </div><!-- End .cta-horizontal -->
+</div><!-- End .container -->

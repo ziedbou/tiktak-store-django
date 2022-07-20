@@ -1,0 +1,128 @@
+{% load get_link %}
+{% load prod_tags %} 
+
+        <header class="header header-8">
+            <div class="header-top">
+                <div class="container">
+                    <div class="header-right">
+                        <ul class="top-menu mb-1 mt-1">
+                            <li>
+                                <a href="#">Liens</a>
+                                <ul>
+                                    <li><a href="tel:{{ company.phone }}"><i class="icon-phone"></i>Tel: {{ company.phone }}</a></li>
+                                    <li v-if="logged"><a href="/wishlist"><i class="icon-heart-o"></i>Mes Favoires<span>( [[ user.customer.favourite.length ]] )</span></a></li>
+                                    <li v-if="logged"><a href="/account"><i class="icon-user"></i>Mon Compte</a></li>
+                                    <li v-if="!logged"><a href="#signin-modal" data-toggle="modal"><i class="icon-user"></i>Se Connecter</a></li>
+                                </ul>
+                            </li>
+                        </ul><!-- End .top-menu -->
+                    </div><!-- End .header-right -->
+                </div><!-- End .container -->
+            </div><!-- End .header-top -->
+
+            <div class="header-middle sticky-header">
+                <div class="container">
+                    <div class="header-left">
+                        <button class="mobile-menu-toggler" @click="upTodo(index)">
+                            <span class="sr-only">Toggle mobile menu</span>
+                            <i class="icon-bars"></i>
+                        </button> 
+                        
+
+                        <h1> 
+                            <a href="/" class="logo">
+                                <img src="{{ "https://api.tiktak.space"|add:company.logo }}" alt="company logo" width="105" height="25">
+                                {% comment %} <img src="{{ "https://api.tiktak.space/"|add:company.logo }}" alt="company logo" width="105" height="25"> {% endcomment %}
+
+                            </a>    
+                        </h1>
+                    </div><!-- End .header-left -->
+
+                    <div class="header-right">
+                        <nav class="main-nav">
+                            <ul class="menu sf-arrows">
+                                {% for menu in header  %}
+                                    <li>
+                                        {% if menu.type == "extern" %}
+                                            <a href="{{ menu.href }}" class="">{{menu.label}}</a>
+                                        {% else %}
+                                            <a href="{{ menu | get_link }}" class="">{{menu.label}}</a>
+                                        {% endif %}
+    
+                                        {% if menu.submenu|length > 0 %}
+                                            <ul>    
+                                                {% for submenu in menu.submenu %}
+                                                    {% if submenu.type == "extern" %}
+                                                        <li><a href="{{ submenu.href }}">{{submenu.label}}</a></li>
+                                                    {% else %}
+                                                        <li><a href="{{ submenu | get_link }}">{{submenu.label}}</a></li>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}                            
+                            </ul><!-- End .menu -->
+                        </nav><!-- End .main-nav -->
+
+                        <div class="header-search">
+                            <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
+                            <form @submit.prevent="searchCall()">
+                                <div class="header-search-wrapper">
+                                    <label for="search" class="sr-only">Rechercher</label>
+                                    <input type="search" class="form-control" v-model="search" placeholder="Rechercher..." required>
+                                </div><!-- End .header-search-wrapper -->
+                            </form>
+                        </div><!-- End .header-search -->
+
+                        <div class="dropdown cart-dropdown">
+                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+                                <i class="icon-shopping-cart"></i>
+                                <span class="cart-count">[[ cart._details.length ]]</span>
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right" v-if="cart._details.length > 0">
+                                <div class="dropdown-cart-products">
+                                    <div class="product" v-for="(product, index) in cart._details" :key="product.name">
+                                        <div class="product-cart-details">
+                                            <h4 class="product-title">
+                                                <a v-bind:href="[[ getProductLink(product._product) ]]">[[ product.product_name ]] [[ getAttrs(product._product) ]]</a>
+                                            </h4>
+
+                                            <span class="cart-product-info">
+                                                <span class="cart-product-qty">[[ product.quantity ]]</span>
+                                                x [[ product.price_ttc_after_discount ]] {{ company.currency }}
+                                            </span>
+                                        </div><!-- End .product-cart-details -->
+
+                                        <figure class="product-image-container">
+                                            <a v-bind:href="[[ getProductLink(product._product) ]]" class="product-image">
+                                                <img v-bind:src="[[ product.product_thumb ]]" alt="product">
+                                            </a>
+                                        </figure>
+                                        <a href="#" class="btn-remove" @click="removeFromCart(index)" title="Remove Product"><i class="icon-close"></i></a>
+                                    </div><!-- End .product -->
+                                </div><!-- End .cart-product -->
+
+                                <div class="dropdown-cart-total">
+                                    <span>Total</span>
+
+                                    <span class="cart-total-price">[[ cart.total_amount ]] {{ company.currency }}</span>
+                                </div><!-- End .dropdown-cart-total -->
+
+                                <div class="dropdown-cart-action">
+                                    <a href="/cart" class="btn btn-primary">Voir Panier</a>
+                                    <a href="/checkout" class="btn btn-outline-primary-2"><span>Valider</span><i class="icon-long-arrow-right"></i></a>
+                                </div><!-- End .dropdown-cart-total -->
+                            </div><!-- End .dropdown-menu -->
+                            <div class="dropdown-menu dropdown-menu-right" v-else>
+                                <div class="empty-cart">
+                                    Votre panier est vide !
+                                </div>
+                            </div><!-- End .dropdown-menu -->
+
+                        </div><!-- End .cart-dropdown -->
+                    </div><!-- End .header-right -->
+                </div><!-- End .container -->
+            </div><!-- End .header-middle -->
+        </header><!-- End .header -->

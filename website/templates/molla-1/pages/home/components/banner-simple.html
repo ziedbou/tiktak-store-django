@@ -1,0 +1,20 @@
+{% load images_tags %}
+<div class="container  banner-simple">
+    <div class="row" style="align-items: center;">
+        {% for key,item in data.values.items  %}
+          {% for image in item %}
+            {% if image.width %}
+          <div class="{{ image.width }}">
+            {% else %}
+          <div class="col-md-12">
+            {% endif %}
+              <div class="mb-3" >
+                  <a href="{{image.link}}">
+                      <img src="{{image.img.image|imghttps}}">
+                  </a>
+              </div>
+            </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+</div><!-- End .container -->

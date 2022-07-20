@@ -1,0 +1,81 @@
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title> {{ company.name }} | {{ seo.title }} </title>
+<meta name="keywords" content="{{ company_info.seo_settings.keywords }}">
+<meta name="description" content="{{ company_info.seo_settings.description }}">
+<meta name="author" content="tiktak-themes">
+{% load images_tags %}
+
+
+<!-- Favicon -->
+<link rel="icon" type="image/x-icon" href="https://api.tiktak.space/api/v1/website/favicon.ico/?slug={{ company.slug }}">
+
+<!-- Facebook OG -->
+<meta property="og:image" content="https://api.tiktak.space{{ seo.image | imghttps }}" />
+<meta property="og:url" content="{{ seo.url | imghttps}}" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="{{ company.name }} | {{ seo.title }}" />
+<meta property="og:description" content="{{ seo.description }}" />
+
+<!-- Twitter OG -->
+<meta name="twitter:title" content="{{ company.name }} | {{ seo.title }}">
+<meta name="twitter:description" content="{{ seo.description }}">
+<meta name="twitter:image" content="https://api.tiktak.space{{ seo.image | imghttps}}">
+<meta name="twitter:card" content="summary_large_image">
+
+  <!-- Global Site Tag (gtag.js) - Google Analytics -->
+  {% if company_info.tags_settings.googleAnalytics and company_info.tags_settings.googleAnalytics != "" %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{company_info.tags_settings.googleAnalytics}}"></script>
+
+  <script>
+  let googleAnalytics = "{{company_info.tags_settings.googleAnalytics}}";
+  
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', googleAnalytics);
+  </script>
+{% endif %}
+
+{% if company_info.tags_settings.googleTagManager and company_info.tags_settings.googleTagManager != "" %}
+  <!-- Google Tag Manager -->
+  <script>
+    let googleTagManager = "{{ company_info.tags_settings.googleTagManager }}";
+
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer', googleTagManager);</script>
+  <!-- End Google Tag Manager -->
+{% endif %}
+
+
+<!-- Facebook Pixel Code -->
+{% if company_info.tags_settings.facebookPixel and company_info.tags_settings.facebookPixel != "" %}
+<script id="fb-pixel">
+
+let facebookPixel = "{{ company_info.tags_settings.facebookPixel }}";
+
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', facebookPixel);
+fbq('track', 'PageView');
+fbq('track', 'ViewContent', {
+  content_ids: "{{page_contents}}",
+  content_type: "{{page_type}}"
+});
+</script>
+<noscript>
+  <img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id="+facebookPixel+"&ev=PageView&noscript=1"/>
+</noscript>
+{% endif %}
+<!-- End Facebook Pixel Code -->       

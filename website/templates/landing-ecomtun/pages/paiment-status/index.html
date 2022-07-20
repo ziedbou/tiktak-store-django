@@ -1,0 +1,40 @@
+{% extends "../index.html" %}
+{% load static %}
+{% block body %}
+
+ 
+<div class="container success-page">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="text-center">
+                <img src="{% static 'assets/landing-ecomtun/imgs/logo-ecomtun.png' %}" class="logo">
+                <br>
+                <br>
+                {% if payment_success %}
+                <h1><strong>VOTRE COMMANDE EST CONFIRMÉE </strong></h1>
+                <br>
+              
+                <h3>Bienvenue dans la famille </h3>
+                <br>
+                <p>Je vous appellerais personnellement<br>pour vous envoyer votre login et mot de passe
+                </p>
+                <br>
+                {% else %}
+                <h1><strong>ERREUR DE PAIEMENT </strong></h1>
+                <br>
+              
+                <h3>Merci de vérifier les informations de la  carte</h3>
+                <br>
+                 <a href="/" class="btn btn-default">Revenir à la page d'accueil</a>
+                <br>
+                {% endif %}
+                <img src="{% static 'assets/landing-ecomtun/imgs/anas-profil.jpg' %}" class="profile">
+                <br>
+                <br>
+                <h2>Cordialement ANAS </h2>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

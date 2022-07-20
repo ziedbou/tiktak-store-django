@@ -1,0 +1,16 @@
+*/*/*/__pycache__/
+
+*/*/__pycache__/
+
+*/__pycache__/
+
+**/migrations
+
+media
+logs
+static/admin
+static/rest_framework
+
+TiktakStore/.env
+
+env

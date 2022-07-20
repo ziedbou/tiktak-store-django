@@ -1,0 +1,9 @@
+{% if data.values.background and data.values.background != "" and  data.values.text %}
+    <div style="padding: 15px 0; text-align: center; background-color: {{data.values.background}}"> 
+        {{ data.values.text|safe  }}
+    </div>
+{% else %}
+    <div style="padding: 15px 0; text-align: center; background-color: white"> 
+        {{ data.values.text|safe  }}
+    </div>
+{% endif %}

@@ -1,0 +1,64 @@
+{% load to_json %}
+<div class="container">
+    <div class="heading heading-center mb-3">
+        <h2 class="title-lg mb-2">{{ data.values.title_1 }} </h2><!-- End .title-lg text-center -->
+    </div><!-- End .heading -->
+    <div class="tab-pane p-0 fade show active" id="top-all-tab" aria-labelledby="top-all-link">
+        <div class="products just-action-icons-sm">
+             <div class="row" v-if="!sectionData[{{key}}]">
+                     
+                    <div class="col-6 col-md-4 col-lg-3 col-xl-5col"  v-for="index in 5" :key="index">
+                        <div class="waiting"></div>
+                    </div>
+                    
+                </div>
+            <div class="row">
+               
+                <div class="col-6 col-md-4 col-lg-3 col-xl-5col" v-for="product in sectionData[{{key}}]">
+                    <div class="product product-3 text-center">
+                        <figure class="product-media">
+                            <span v-if="product.active_stock && product.stock < 1 && ! product.order_without_stock" class="product-label label-primary">En rupture de stock</span>
+                            <span v-if="product.discount > 0" class="product-label label-sale">En promotion!</span>
+                            <a v-bind:href="[[ getProductLink(product) ]]">
+                                <img v-bind:src="[[ imghttps(product.photo)]]"v-bind:alt="[[ product.name ]]" class="product-image">
+                            </a>
+                            <div class="product-action-vertical">
+                                <a href="#" v-if="logged" @click="addToWishlist(product.id, $event)" class="btn-product-icon btn-wishlist btn-expandable"><span>Ajouter aux Favoris</span></a>
+                            </div><!-- End .product-action-vertical -->
+                        </figure><!-- End .product-media -->
+                        <div class="product-body">
+                            <div class="product-cat">
+                                <a>[[ product?._category?.name ]]</a>
+                            </div><!-- End .product-cat -->
+                            <h3 class="product-title"><a v-bind:href="[[ getProductLink(product) ]]">[[ product.name ]]</a></h3><!-- End .product-title -->
+                            <div class="product-price" v-if="product.discount > 0">
+                                <span class="new-price">[[ product.price - product.discount ]] {{ company.currency }}</span>
+                                <span class="old-price">[[ product.price ]] {{ company.currency }}</span>
+                            </div>
+                            <div class="product-price" v-if="!product.discount > 0">
+                                [[ product.price ]] {{ company.currency }}
+                            </div><!-- End .product-price -->
+                        </div><!-- End .product-body -->
+                        <div class="product-footer">
+                            <div class="ratings-container">
+                                <div class="ratings">
+                                    <div class="ratings-val" style="width: 60%;"></div><!-- End .ratings-val -->
+                                </div><!-- End .ratings -->
+                                <span class="ratings-text">( 4 Reviews )</span>
+                            </div><!-- End .rating-container -->
+                            <div class="product-nav product-nav-dots">
+                                <a href="#" class="active" style="background: #af5f23;"><span class="sr-only">Color name</span></a>
+                                <a href="#" style="background: #806f55;"><span class="sr-only">Color name</span></a>
+                                <a href="#" style="background: #333333;"><span class="sr-only">Color name</span></a>
+                            </div><!-- End .product-nav -->
+                            <div class="product-action">
+                                <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
+                                <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
+                            </div><!-- End .product-action -->
+                        </div><!-- End .product-footer -->
+                    </div><!-- End .product -->
+                </div><!-- End .col-6 col-md-4 col-lg-3 -->
+            </div><!-- End .row -->
+        </div><!-- End .products -->
+    </div><!-- .End .tab-pane -->
+</div><!-- End .container -->

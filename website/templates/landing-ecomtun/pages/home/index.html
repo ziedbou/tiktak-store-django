@@ -1,0 +1,71 @@
+{% extends "../index.html" %}
+{% load static %}
+{% block body %}
+<div class="container">
+    <form @submit.prevent="createOrder()">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="text-center">
+                    <img src="{% static 'assets/landing-ecomtun/imgs/logo-ecomtun.png' %}" class="logo">
+                </div>
+                <h2>Veuillez remplir les champs ci-dessous :</h2>
+                <p>Vos informations personnelles :</p>
+                <div class="form-group mb-3">
+                    <input type="text" v-model="order.name" required class="form-control" placeholder="Nom et prénom">
+                </div>
+                <div class="form-group mb-3">
+                    <input type="text" v-model="order.email" required class="form-control" placeholder="Email">
+                </div>
+                <div class="form-group mb-3">
+                    <input type="text" v-model="order.phone" required class="form-control" placeholder="Numéro de téléphone">
+                </div>
+                <div>
+                    <div class="row">
+                        <div class="col-2">
+                            <img class="mr-3" src="{% static 'assets/landing-ecomtun/imgs/free.png' %}" class="d-inline-flex p-2" style="width:90px" alt="">
+                        </div>
+                        <div class="col-10">
+                            <h5>Vous allez profiterer de la formation ECOMTUN 2.0 incluant les 6 nouveaux modules</h5>
+                        </div>
+                    </div>
+                    <ul class="mt-3">
+                        <li>✓ 6 modules comportants des vidéos (TUTO)</li>
+                        <li>✓ Mise à jour de 2022 (publicités sur Facebook)</li>
+                        <li>✓ Accès à un groupe Facebook</li>
+                        <li>✓ Accès Live Privé (Coaching de groupe) </li>
+                        <li>✓ Accès Live Privé (Coaching de groupe)</li>
+                        <li>✓ Mes dernières stratégies FaceBook Ads</li>
+                        <li>✓ Analyse des boutiques</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-5">
+                <div class="value" v-if="product">
+                    <div class="principal"> Valeur principale = [[product?.price]] <sup>TND</sup></div>
+                    <div class="offre">
+                        <span style="color: #872ebd;">AUJOURD'HUI</span> <br><span style="color: #060606;">SEULEMENT</span> <span style="color: #198754;font-size: 28px;"> [[getPriceOfProduct(product,1) | number]] <sup>TND</sup></span>
+                    </div>
+                </div>
+                <div class="lancement">
+                    ► OFFRE DE LANCEMENT
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-lg btn-action">
+                        <img src="{% static 'assets/landing-ecomtun/imgs/checkout-svgrepo-com.svg' %}"> Allez à l'étape suivante
+                    </button>
+                    <p><small>* Nous respectons la confidentialité de vos informations *</small></p>
+                </div>
+                <div class="text-center">
+                    <img src="{% static 'assets/landing-ecomtun/imgs/badges.png' %}" class="bagde">
+                </div>
+                <div class="text-center">
+                    <img src="{% static 'assets/landing-ecomtun/imgs/Logo-Garantee.png' %}" class="garantie">
+                </div>
+                <h2 class="text-center">ECOMTUN 1.0 <br>Une Formation 100% Garantie </h2>
+                <p class="small">Nous avons pleinement confiance en notre programme d'entraînement, c'est pourquoi nous en offrons la garantie totale. Si vous n'avez pas réussi à atteindre 5000 € de ventes en 365 jours après avoir appliqué toutes les stratégies de la formation, nous vous rembourserons son prix d'achat. </p>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

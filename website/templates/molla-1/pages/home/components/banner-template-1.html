@@ -1,0 +1,64 @@
+{% load images_tags %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-sm-6 col-lg-3">
+            <div class="banner banner-cat banner-link-anim">
+                <a href="{{data.values.url_1}}">
+                    <img src="{{ data.values.image_1.image| imghttps }}" alt="Banner">
+                </a>
+
+                <div class="banner-content banner-content-bottom">
+                    <h3 class="banner-title">{{ data.values.title_1 }}</h3><!-- End .banner-title -->
+                    <h4 class="banner-subtitle">{{ data.values.subtitle_1 }}</h4><!-- End .banner-subtitle -->
+                    <a href="#" class="banner-link">{{ data.values.text_1 }}</a>
+                </div><!-- End .banner-content -->
+            </div><!-- End .banner -->
+        </div><!-- End .col-md-6 -->
+
+        <div class="col-sm-6 col-lg-3 order-lg-last">
+            <div class="banner banner-cat banner-link-anim">
+                <a href="{{data.values.url_2}}">
+                    <img src="{{ data.values.image_2.image| imghttps }}" alt="Banner">
+                </a>
+
+                <div class="banner-content banner-content-top">
+                    <h3 class="banner-title">{{ data.values.title_2 }}</h3><!-- End .banner-title -->
+                    <h4 class="banner-subtitle">{{ data.values.subtitle_2 }}</h4><!-- End .banner-subtitle -->
+                    <a href="#" class="banner-link">{{ data.values.text_2 }}</a>
+                </div><!-- End .banner-content -->
+            </div><!-- End .banner -->
+        </div><!-- End .col-sm-6 -->
+
+        <div class="col-lg-6">
+            <div class="row">
+                <div class="col-sm-6 col-lg-12">
+                    <div class="banner banner-cat banner-link-anim">
+                        <a href="{{data.values.url_3}}">
+                            <img src="{{ data.values.image_3.image| imghttps }}" alt="Banner">
+                        </a>
+
+                        <div class="banner-content">
+                            <h3 class="banner-title">{{ data.values.title_3 }}</h3><!-- End .banner-title -->
+                            <h4 class="banner-subtitle">{{ data.values.subtitle_3 }}</h4><!-- End .banner-subtitle -->
+                            <a href="#" class="banner-link">{{ data.values.text_3 }}</a>
+                        </div><!-- End .banner-content -->
+                    </div><!-- End .banner -->
+                </div><!-- End .col-sm-6 col-lg-12 -->
+
+                <div class="col-sm-6 col-lg-12">
+                    <div class="banner banner-cat banner-link-anim">
+                        <a href="{{data.values.url_4}}">
+                            <img src="{{ data.values.image_4.image| imghttps }}" alt="Banner">
+                        </a>
+
+                        <div class="banner-content">
+                            <h3 class="banner-title">{{ data.values.title_4 }}</h3><!-- End .banner-title -->
+                            <h4 class="banner-subtitle">{{ data.values.subtitle_4 }}</h4><!-- End .banner-subtitle -->
+                            <a href="#" class="banner-link">{{ data.values.text_4 }}</a>
+                        </div><!-- End .banner-content -->
+                    </div><!-- End .banner -->
+                </div><!-- End .col-sm-6 col-lg-12 -->
+            </div><!-- End .row -->
+        </div><!-- End .col-lg-6 -->
+    </div>
+</div>
